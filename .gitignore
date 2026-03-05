@@ -1,0 +1,16 @@
+# Node
+node_modules/
+.env
+
+# React
+frontend/node_modules/
+build/
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Misc
+.DS_Store

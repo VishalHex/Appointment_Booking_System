@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "${DB_USER}",
+    "password": "${DB_PASS}",
+    "database": "appointment_db",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}
