@@ -32,3 +32,66 @@ CREATE TABLE appointments (
 
 CREATE INDEX idx_appointment_time ON appointments(appointment_time);
 CREATE INDEX idx_provider_id ON appointments(provider_id);
+
+-- Sample data
+-- password_hash = password123
+INSERT INTO users (name, email, password_hash, role) VALUES
+('John Doe', 'john@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Jane Smith', 'jane@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Bob Johnson', 'bob@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Alice Brown', 'alice@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'client'),
+('Provider 4', 'provider4@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 5', 'provider5@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 6', 'provider6@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 7', 'provider7@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 8', 'provider8@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 9', 'provider9@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 10', 'provider10@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 11', 'provider11@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 12', 'provider12@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 13', 'provider13@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 14', 'provider14@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 15', 'provider15@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 16', 'provider16@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 17', 'provider17@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 18', 'provider18@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 19', 'provider19@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 20', 'provider20@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider'),
+('Provider 21', 'provider21@example.com', '$2b$10$abcdefghijklmnopqrstuvwx', 'provider');
+
+INSERT INTO providers (user_id, service_name, description) VALUES
+(1, 'Hair Cutting', 'Professional hair cutting and styling services'),
+(2, 'Dental Checkup', 'Comprehensive dental care and cleaning'),
+(3, 'Car Repair', 'Auto repair and maintenance services'),
+(5, 'Plumbing Services', 'Expert plumbing and pipe repairs'),
+(6, 'Electrical Work', 'Electrical installations and repairs'),
+(7, 'House Cleaning', 'Deep cleaning and maintenance services'),
+(8, 'Tutoring', 'Personalized tutoring for various subjects'),
+(9, 'Fitness Training', 'Personal fitness and workout sessions'),
+(10, 'Photography', 'Professional photography services'),
+(11, 'Web Development', 'Custom website development'),
+(12, 'Graphic Design', 'Creative graphic design solutions'),
+(13, 'Legal Consultation', 'Legal advice and consultation'),
+(14, 'Accounting Services', 'Financial accounting and tax services'),
+(15, 'Gardening', 'Lawn care and gardening services'),
+(16, 'Pet Care', 'Pet grooming and veterinary services'),
+(17, 'Catering', 'Event catering and food services'),
+(18, 'Event Planning', 'Professional event planning'),
+(19, 'Music Lessons', 'Instrument and vocal lessons'),
+(20, 'Massage Therapy', 'Relaxing massage and therapy sessions'),
+(21, 'Home Renovation', 'Home improvement and renovation');
+
+INSERT INTO appointments (client_id, provider_id, appointment_time, status) VALUES
+(4, 1, '2026-03-10 10:00:00', 'booked'),
+(4, 2, '2026-03-15 14:00:00', 'booked'),
+(4, 3, '2026-04-05 09:00:00', 'booked'),
+(4, 5, '2026-04-12 11:00:00', 'booked'),
+(4, 6, '2026-04-20 16:00:00', 'booked'),
+(4, 7, '2026-05-03 13:00:00', 'booked'),
+(4, 8, '2026-05-15 10:30:00', 'booked'),
+(4, 9, '2026-05-25 15:00:00', 'booked'),
+(4, 10, '2026-06-08 12:00:00', 'booked'),
+(4, 11, '2026-06-20 14:00:00', 'booked'),
+(4, 12, '2026-07-02 11:00:00', 'booked'),
+(4, 13, '2026-03-25 08:00:00', 'completed'),
+(4, 14, '2026-04-18 17:00:00', 'cancelled');

@@ -38,6 +38,18 @@ export const Appointment = !USE_LOCAL_DB ? sequelize.define('appointment', {
   reminder_sent: { type: DataTypes.BOOLEAN, defaultValue: false },
 }, { timestamps: true, underscored: true }) : null;
 
+// Associations
+if (!USE_LOCAL_DB) {
+  User.hasMany(Provider, { foreignKey: 'user_id' });
+  Provider.belongsTo(User, { foreignKey: 'user_id' });
+
+  User.hasMany(Appointment, { foreignKey: 'client_id' });
+  Appointment.belongsTo(User, { foreignKey: 'client_id', as: 'client' });
+
+  Provider.hasMany(Appointment, { foreignKey: 'provider_id' });
+  Appointment.belongsTo(Provider, { foreignKey: 'provider_id' });
+}
+
 // Local data helpers
 function readLocalData(file) {
   try {

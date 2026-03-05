@@ -3,7 +3,8 @@ import { requireAuth } from '../middleware/authMiddleware.js';
 import {
 	registerProvider,
 	listProviders,
-	providerCalendar
+	providerCalendar,
+	getProviderSlots
 } from '../controllers/providerController.js';
 
 const router = express.Router();
@@ -13,6 +14,8 @@ const router = express.Router();
 router.post('/', requireAuth(['admin']), registerProvider);
 // List all providers
 router.get('/', listProviders);
+// Get provider slots
+router.get('/:providerId/slots', getProviderSlots);
 // Get provider calendar
 router.get('/:providerId/calendar', providerCalendar);
 

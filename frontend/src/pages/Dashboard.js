@@ -27,7 +27,7 @@ export default function Dashboard() {
             const res = await axios.get(`${API_URL}/api/appointments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setAppointments(res.data || []);
+            setAppointments(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error('Failed to fetch appointments:', err);
         } finally {
