@@ -1,0 +1,155 @@
+.auth-page {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.auth-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    width: 100%;
+    max-width: 1000px;
+    align-items: center;
+}
+
+.auth-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    padding: 0;
+    overflow: hidden;
+}
+
+.auth-header {
+    padding: 40px;
+    text-align: center;
+}
+
+.auth-header h2 {
+    margin: 0 0 0.5rem;
+    color: #1976d2;
+    font-size: 2rem;
+}
+
+.auth-header p {
+    margin: 0;
+    color: #666;
+    font-size: 1rem;
+}
+
+.auth-card form {
+    padding: 0 40px 40px;
+}
+
+.auth-footer {
+    padding: 20px 40px;
+    text-align: center;
+    border-top: 1px solid #eee;
+    background: #f9f9f9;
+}
+
+.auth-footer p {
+    margin: 0;
+    color: #666;
+}
+
+.auth-link {
+    color: #1976d2;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+.auth-image {
+    text-align: center;
+}
+
+.image-placeholder {
+    font-size: 150px;
+    margin-bottom: 2rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.auth-image h3 {
+    color: #1976d2;
+    margin-bottom: 0.5rem;
+}
+
+.auth-image p {
+    color: #666;
+    margin: 0;
+}
+
+.success-message {
+    text-align: center;
+    background: #e8f5e9;
+    border-radius: 12px;
+    padding: 60px 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    max-width: 500px;
+}
+
+.success-icon {
+    font-size: 80px;
+    margin-bottom: 1.5rem;
+    animation: scaleUp 0.5s ease;
+}
+
+@keyframes scaleUp {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.success-message h2 {
+    color: #388e3c;
+    margin-bottom: 1rem;
+}
+
+.success-message p {
+    color: #666;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .auth-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .auth-image {
+        display: none;
+    }
+
+    .auth-card {
+        max-width: 100%;
+    }
+
+    .auth-header {
+        padding: 30px;
+    }
+
+    .auth-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .auth-footer p {
+        font-size: 0.9rem;
+    }
+
+    .image-placeholder {
+        font-size: 100px;
+    }
+}
