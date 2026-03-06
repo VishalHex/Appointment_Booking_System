@@ -16,6 +16,7 @@ if (!USE_LOCAL_DB) {
     {
       host: process.env.DB_HOST || 'localhost',
       dialect: 'postgres',
+      timezone: '+05:30' // ensure Sequelize writes timestamps in IST
     }
   );
 }

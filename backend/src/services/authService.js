@@ -6,7 +6,6 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
 export async function registerUser({ name, email, password, role }) {
   try {
-    console.log('Registering user with email:', name, email, password, role);
     const password_hash = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password_hash, role });
     return user;

@@ -40,7 +40,21 @@ export async function providerCalendar(req, res) {
       where: { provider_id: providerId },
       order: [['appointment_time', 'ASC']]
     });
-    res.json(appointments);
+    // Format appointment_time to IST string (no Z) to match slots format
+    const formattedAppointments = appointments.map(apt => {
+      const d = apt.appointment_time;
+      const yr = d.getFullYear();
+      const mo = String(d.getMonth() + 1).padStart(2, '0');
+      const da = String(d.getDate()).padStart(2, '0');
+      const hr = String(d.getHours()).padStart(2, '0');
+      const mi = String(d.getMinutes()).padStart(2, '0');
+      const sec = String(d.getSeconds()).padStart(2, '0');
+      return {
+        ...apt.toJSON(),
+        appointment_time: `${yr}-${mo}-${da}T${hr}:${mi}:${sec}`
+      };
+    });
+    res.json(formattedAppointments);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -50,21 +64,44 @@ export async function providerCalendar(req, res) {
 export async function getProviderSlots(req, res) {
   try {
     const { providerId } = req.params;
-    // For simplicity, generate some dummy slots for the next 7 days
+
+    // Validate providerId
+    const provider = await Provider.findByPk(providerId);
+    if (!provider) {
+      return res.status(404).json({ error: 'Provider not found' });
+    }
+
+    // Generate slots for 4 months (120 days)
     const slots = [];
     const now = new Date();
-    for (let i = 1; i <= 7; i++) {
+    const maxDate = new Date(now.getTime() + 120 * 24 * 60 * 60 * 1000);
+
+    for (let i = 1; i <= 120; i++) {
       const date = new Date(now);
       date.setDate(now.getDate() + i);
-      // Add slots from 9 AM to 5 PM, every hour
+      if (date > maxDate) break;
+
+      // Skip weekends (optional - remove if you want weekends available)
+      // const dayOfWeek = date.getDay();
+      // if (dayOfWeek === 0 || dayOfWeek === 6) continue; // Skip Sunday (0) and Saturday (6)
+
+      // Generate slots for each day (e.g., 9 AM to 5 PM, every hour)
       for (let hour = 9; hour < 17; hour++) {
         const slot = new Date(date);
         slot.setHours(hour, 0, 0, 0);
-        slots.push(slot.toISOString());
+        const yr = slot.getFullYear();
+        const mo = String(slot.getMonth() + 1).padStart(2, '0');
+        const da = String(slot.getDate()).padStart(2, '0');
+        const hr = String(slot.getHours()).padStart(2, '0');
+        const mi = String(slot.getMinutes()).padStart(2, '0');
+        const sec = String(slot.getSeconds()).padStart(2, '0');
+        slots.push(`${yr}-${mo}-${da}T${hr}:${mi}:${sec}`);
       }
     }
+
     res.json(slots);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error('Error fetching provider slots:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }

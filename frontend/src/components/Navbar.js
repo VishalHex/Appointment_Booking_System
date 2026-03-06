@@ -38,8 +38,7 @@ export default function Navbar() {
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <li><Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
-          {token && <li><Link to="/dashboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>Dashboard</Link></li>}
-          {token && <li><Link to="/book" className="nav-link" onClick={() => setIsMenuOpen(false)}>Book</Link></li>}
+          {token && <li><Link to="/book" className="nav-link" onClick={() => setIsMenuOpen(false)}>Book Appointment</Link></li>}
           {!token && (
             <>
               <li><Link to="/login" className="nav-link" onClick={() => setIsMenuOpen(false)}>Login</Link></li>

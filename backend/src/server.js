@@ -6,6 +6,8 @@ import router from './routes.js';
 import { errorHandler, validateRegistration } from './middleware.js';
 
 dotenv.config();
+// Force Node to operate in IST for all date handling
+process.env.TZ = 'Asia/Kolkata';
 const app = express();
 // Allow CORS for frontend origin
 app.use(cors({
@@ -36,7 +38,25 @@ app.get('/', (req, res) => {
 app.use('/api', router);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-});
+// Attempt database connection if using real DB
+import sequelize from './models.js';
+async function startServer() {
+  if (sequelize) {
+    try {
+      await sequelize.authenticate();
+      logger.info('Database connection has been established successfully.');
+    } catch (dbErr) {
+      logger.error('Unable to connect to the database:', dbErr);
+      process.exit(1);
+    }
+  } else {
+    logger.warn('Running with local JSON data instead of a database.');
+  }
+
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+  });
+}
+
+startServer();

@@ -14,8 +14,11 @@ export async function register(req, res) {
 
 export async function login(req, res) {
   try {
-    const { user, token } = await authenticateUser(req.body.email, req.body.password);
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    const authResult = await authenticateUser(req.body.email, req.body.password);
+    if (!authResult || !authResult.user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const { user, token } = authResult;
     // Remove sensitive fields before sending response
     const { password_hash, ...safeUser } = user.toJSON();
     res.json({ user: safeUser, token });

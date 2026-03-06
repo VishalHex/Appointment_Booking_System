@@ -1,57 +1,173 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../pages/AppointmentBooking.css';
 
 const API_URL = process.env.REACT_APP_API_URL;
+// timezone used throughout for display
+const TIMEZONE = 'Asia/Kolkata';
+
+// Progress Indicator Component
+function ProgressIndicator({ currentStep, totalSteps }) {
+  return (
+    <div className="progress-indicator">
+      {Array.from({ length: totalSteps }, (_, i) => (
+        <div key={i} className="progress-step">
+          <div className={`progress-circle ${i < currentStep ? 'completed' : i === currentStep ? 'active' : ''}`}>
+            {i < currentStep ? '✓' : i + 1}
+          </div>
+          <div className="progress-label">
+            {i === 0 && 'Service'}
+            {i === 1 && 'Date & Time'}
+            {i === 2 && 'Confirm'}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Calendar Component
+function CalendarPicker({ selectedDate, onSelectDate, allSlots }) {
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    if (selectedDate) {
+      return new Date(selectedDate);
+    }
+    return new Date();
+  });
+
+  useEffect(() => {
+    if (selectedDate) {
+      const selectedDateObj = new Date(selectedDate);
+      setCurrentMonth(new Date(selectedDateObj.getFullYear(), selectedDateObj.getMonth(), 1));
+    }
+  }, [selectedDate]);
+
+  const getDaysInMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+
+  const getDatesWithSlots = () => {
+    if (!allSlots.length) return new Set();
+    const datesSet = new Set();
+    allSlots.forEach(slot => {
+      const dateStr = slot.split('T')[0];
+      datesSet.add(dateStr);
+    });
+    return datesSet;
+  };
+
+  const goToPreviousMonth = () => {
+    const today = new Date();
+    if (currentMonth.getMonth() > today.getMonth() || currentMonth.getFullYear() > today.getFullYear()) {
+      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+    }
+  };
+
+  const goToNextMonth = () => {
+    const maxDate = new Date(new Date().getTime() + 120 * 24 * 60 * 60 * 1000);
+    if (currentMonth.getMonth() < maxDate.getMonth() || currentMonth.getFullYear() < maxDate.getFullYear()) {
+      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+    }
+  };
+
+  const daysInMonth = getDaysInMonth(currentMonth);
+  const firstDay = getFirstDayOfMonth(currentMonth);
+  const daysArray = [];
+  const datesWithSlots = getDatesWithSlots();
+  const today = new Date();
+
+  for (let i = 0; i < firstDay; i++) {
+    daysArray.push(null);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    daysArray.push(day);
+  }
+
+  const monthYear = currentMonth.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: TIMEZONE });
+
+  return (
+    <div className="calendar-picker">
+      <div className="calendar-header">
+        <button onClick={goToPreviousMonth} className="nav-btn">❮</button>
+        <h3>{monthYear}</h3>
+        <button onClick={goToNextMonth} className="nav-btn">❯</button>
+      </div>
+
+      <div className="weekdays">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          <div key={day} className="weekday">{day}</div>
+        ))}
+      </div>
+
+      <div className="calendar-grid">
+        {daysArray.map((day, idx) => {
+          if (day === null) {
+            return <div key={`empty-${idx}`} className="calendar-day empty"></div>;
+          }
+
+          const dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+          const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const hasSlots = datesWithSlots.has(dateStr);
+          const isSelected = selectedDate === dateStr;
+          const isDisabled = dateObj < new Date(today.getFullYear(), today.getMonth(), today.getDate()) || !hasSlots;
+
+          return (
+            <button
+              key={`day-${day}`}
+              className={`calendar-day ${isSelected ? 'selected' : ''} ${hasSlots && !isDisabled ? 'available' : 'unavailable'} ${isDisabled ? 'disabled' : ''}`}
+              onClick={() => !isDisabled && onSelectDate(dateStr)}
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function AppointmentBooking() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  const [providers, setProviders] = useState([]);
+  // Define state variables
   const [selectedProvider, setSelectedProvider] = useState(null);
-  const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [booking, setBooking] = useState(false);
   const [message, setMessage] = useState('');
 
-  useEffect(() => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-    fetchProviders();
-  }, [token, navigate]);
-
-  useEffect(() => {
-    if (selectedProvider) {
-      fetchSlots();
-    } else {
-      setSlots([]);
-    }
-  }, [selectedProvider]);
-
-  const fetchProviders = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/api/providers`);
-      setProviders(res.data || []);
-    } catch (err) {
-      console.error('Failed to fetch providers:', err);
-    } finally {
-      setLoading(false);
-    }
+  // Calculate current step
+  const getCurrentStep = () => {
+    if (!selectedProvider) return 0;
+    if (!selectedSlot) return 1;
+    return 2;
   };
 
-  const fetchSlots = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/api/providers/${selectedProvider.id}/slots`);
-      setSlots(res.data || []);
-    } catch (err) {
-      console.error('Failed to fetch slots:', err);
-      setSlots([]);
-    }
+  // Filter slots for selected date
+  const getDaySlots = () => {
+    if (!selectedDate || !allSlots.length) return [];
+    const selectedDateStr = selectedDate.split('T')[0];
+    return allSlots.filter(slot => slot.split('T')[0] === selectedDateStr);
+  };
+
+  // Get available slots (not booked by user)
+  const getAvailableSlots = () => {
+    const daySlots = getDaySlots();
+    if (!userAppointments.length) return daySlots;
+
+    const bookedSlots = new Set();
+    userAppointments.forEach(appointment => {
+      bookedSlots.add(appointment.appointment_time);
+    });
+
+    return daySlots.filter(slot => !bookedSlots.has(slot));
   };
 
   const handleBookAppointment = async () => {
@@ -75,126 +191,274 @@ export default function AppointmentBooking() {
         navigate('/dashboard');
       }, 2000);
     } catch (err) {
-      setMessage('✗ Failed to book appointment. Please try again.');
+      // display backend error message if available, otherwise generic message
+      const errorMsg = err.response?.data?.error || 'Failed to book appointment. Please try again.';
+      setMessage(`✗ ${errorMsg}`);
     } finally {
       setBooking(false);
     }
   };
 
+  // Added missing state variables
+  const [allSlots, setAllSlots] = useState([]);
+  const [userAppointments, setUserAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [providers, setProviders] = useState([]);
+  const [fetchingSlots, setFetchingSlots] = useState(false);
+  const [providerAppointments, setProviderAppointments] = useState([]);
+
+  const fetchSlots = useCallback(async () => {
+    setFetchingSlots(true);
+    try {
+      const [slotsRes, calendarRes] = await Promise.all([
+        axios.get(`${API_URL}/api/providers/${selectedProvider.id}/slots`),
+        axios.get(`${API_URL}/api/providers/${selectedProvider.id}/calendar`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+      setAllSlots(slotsRes.data || []);
+      setProviderAppointments(calendarRes.data || []);
+      setSelectedDate(null);
+      setSelectedSlot(null);
+      setMessage('');
+    } catch (err) {
+      console.error('Failed to fetch slots:', err);
+      setAllSlots([]);
+      setProviderAppointments([]);
+    } finally {
+      setFetchingSlots(false);
+    }
+  }, [selectedProvider?.id, token]);
+
+  useEffect(() => {
+    if (selectedProvider) {
+      fetchSlots();
+    } else {
+      setAllSlots([]);
+      setSelectedDate(null);
+      setSelectedSlot(null);
+      setMessage('');
+    }
+  }, [selectedProvider, fetchSlots]);
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/providers`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProviders(res.data || []);
+      } catch (err) {
+        console.error('Failed to fetch providers:', err);
+      } finally {
+        setLoading(false); // Ensure loading is set to false after fetching
+        setMessage(''); // Clear any previous messages
+      }
+    };
+
+    fetchProviders();
+  }, [token]);
+
   if (loading) {
-    return <div className="appointment-booking"><div className="spinner"></div></div>;
+    return (
+      <div className="appointment-booking">
+        <div className="booking-container">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Loading available services...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="appointment-booking">
       <div className="booking-container">
+        <ProgressIndicator currentStep={getCurrentStep()} totalSteps={3} />
+
         <div className="booking-header">
-          <h1>Book an Appointment</h1>
-          <p>Select a service provider and choose your preferred time slot</p>
+          <h1>🗓️ Book an Appointment</h1>
+          <p>Choose a service, date, and time that works best for you</p>
         </div>
 
         {/* Step 1: Select Provider */}
         <div className="booking-section">
-          <h2>Step 1: Select Service Provider</h2>
-          <div className="providers-grid">
-            {providers.map(provider => (
-              <div
-                key={provider.id}
-                className={`provider-card ${selectedProvider?.id === provider.id ? 'selected' : ''}`}
-                onClick={() => {
-                  setSelectedProvider(provider);
-                  setSelectedSlot(null);
-                }}
-              >
-                <div className="provider-icon">👨‍💼</div>
-                <h3>{provider.service_name}</h3>
-                <p className="provider-name">{provider.name || 'Service Provider'}</p>
-                <p className="provider-details">{provider.service_description || 'Professional services'}</p>
-                <div className="provider-rating">
-                  ⭐ {(Math.random() * 1 + 4).toFixed(1)} (42 reviews)
-                </div>
-              </div>
-            ))}
+          <div className="step-header">
+            <span className="step-number">1</span>
+            <h2>Select a Service</h2>
           </div>
+
+          {providers.length === 0 ? (
+            <div className="no-services">
+              <p>📭 No services available at the moment.</p>
+              <p>Please check back later or contact support.</p>
+            </div>
+          ) : (
+            <div className="services-grid">
+              {providers.map(provider => (
+                <div
+                  key={provider.id}
+                  className={`service-card ${selectedProvider?.id === provider.id ? 'selected' : ''}`}
+                  onClick={() => setSelectedProvider(provider)}
+                >
+                  <div className="service-icon">🛠️</div>
+                  <div className="service-info">
+                    <h3>{provider.service_name}</h3>
+                    <div className="service-details">
+                      <span className="duration">⏱️ 60 min</span>
+                      <span className="price">💰 $100</span>
+                    </div>
+                    <p className="service-description">
+                      Professional service with expert consultation and follow-up support.
+                    </p>
+                  </div>
+                  {selectedProvider?.id === provider.id && (
+                    <div className="selected-indicator">✓</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {selectedProvider && (
+            <div className="selected-service-summary">
+              <div className="summary-badge">
+                ✓ {selectedProvider.service_name} selected
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Step 2: Select Time Slot */}
+        {/* Step 2: Select Date & Time */}
         {selectedProvider && (
           <div className="booking-section">
-            <h2>Step 2: Select Time Slot</h2>
-            {slots.length === 0 ? (
-              <div className="no-slots">
-                <p>No available slots for this provider. Please try another provider or date.</p>
+            <div className="step-header">
+              <span className="step-number">2</span>
+              <h2>Select Date & Time</h2>
+              <div className="timezone-info">
+                Times shown in your local timezone
+              </div>
+            </div>
+
+            {fetchingSlots ? (
+              <div className="loading-slots">
+                <div className="spinner"></div>
+                <p>Loading available times...</p>
               </div>
             ) : (
-              <div className="slots-grid">
-                {slots.map((slot, idx) => (
-                  <button
-                    key={idx}
-                    className={`slot-btn ${selectedSlot === slot ? 'selected' : ''}`}
-                    onClick={() => setSelectedSlot(slot)}
-                  >
-                    {new Date(slot).toLocaleString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </button>
-                ))}
+              <div className="date-time-wrapper">
+                <div className="calendar-section">
+                  <h3>Choose a Date</h3>
+                  <CalendarPicker
+                    selectedDate={selectedDate}
+                    onSelectDate={(dateStr) => {
+                      setSelectedDate(dateStr);
+                      setSelectedSlot(null);
+                      setMessage('');
+                    }}
+                    allSlots={allSlots}
+                  />
+                </div>
+
+                {selectedDate && (
+                  <div className="time-section">
+                    <h3>
+                      Available Times for {new Date(selectedDate).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        timeZone: TIMEZONE
+                      })}
+                    </h3>
+
+                    {getAvailableSlots().length > 0 ? (
+                      <div className="time-slots-container">
+                        <div className="time-slots-grid">
+                          {getAvailableSlots().map((slot, idx) => {
+                            const time = new Date(slot).toLocaleTimeString('en-US', {
+                              hour: 'numeric',
+                              minute: '2-digit',
+                              hour12: true,
+                              timeZone: TIMEZONE
+                            });
+                            const isSelected = selectedSlot === slot;
+                            const isBooked = providerAppointments.some(
+                              appointment => appointment.appointment_time.startsWith(slot) && appointment.status === 'booked'
+                            );
+                            return (
+                              <button
+                                key={idx}
+                                className={`time-slot-button ${isSelected ? 'selected' : ''} ${isBooked ? 'booked' : ''}`}
+                                onClick={() => !isBooked && setSelectedSlot(slot) && setMessage('')}
+                                disabled={isBooked}
+                              >
+                                {time}
+                                {isBooked && <span className="booked-label">Booked</span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="no-times-message">
+                        <p>📅 No available times on this date.</p>
+                        <p>Please select a different date.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
         )}
-
-        {/* Step 3: Confirmation */}
+        {/* Step 3: Confirm Booking */}
         {selectedProvider && selectedSlot && (
-          <div className="booking-section booking-confirmation">
-            <h2>Step 3: Confirm Booking</h2>
-            <div className="confirmation-details">
-              <div className="detail-row">
-                <span>Provider:</span>
-                <strong>{selectedProvider.service_name}</strong>
-              </div>
-              <div className="detail-row">
-                <span>Date & Time:</span>
-                <strong>
-                  {new Date(selectedSlot).toLocaleString('en-US', {
+          <div className="booking-section confirmation-page">
+            <h2>Confirm Your Booking</h2>
+            <p>Please review your booking details below:</p>
+            <div className="details">
+              <h4>Booking Details</h4>
+              <ul>
+                <li>Service: {selectedProvider.service_name}</li>
+                <li>Duration: 60 minutes</li>
+                <li>
+                  Date & Time: {new Date(selectedSlot).toLocaleDateString('en-US', {
                     weekday: 'long',
+                    year: 'numeric',
                     month: 'long',
                     day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+                    timeZone: TIMEZONE
+                  })} at {new Date(selectedSlot).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                    timeZone: TIMEZONE
                   })}
-                </strong>
-              </div>
+                </li>
+                <li>Timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}</li>
+              </ul>
             </div>
+            <div className="actions">
+              <button onClick={() => navigate('/dashboard')} className="back-btn">
+                ← Back
+              </button>
+              <button
+                onClick={handleBookAppointment}
+                disabled={!selectedProvider || !selectedSlot || booking}
+                className="confirm-btn"
+              >
+                {booking ? '⏳ Booking...' : '✓ Confirm Booking'}
+              </button>
+            </div>
+            {/* Message */}
+            {message && (
+              <div className={message.includes('✓') ? 'booking-success' : 'booking-error'}>
+                {message}
+              </div>
+            )}
           </div>
         )}
-
-        {/* Message */}
-        {message && (
-          <div className={message.includes('✓') ? 'booking-success' : 'booking-error'}>
-            {message}
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="booking-actions">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="btn btn-secondary"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleBookAppointment}
-            disabled={!selectedProvider || !selectedSlot || booking}
-            className="btn btn-primary"
-          >
-            {booking ? '⏳ Booking...' : 'Confirm Booking'}
-          </button>
-        </div>
       </div>
     </div>
   );
