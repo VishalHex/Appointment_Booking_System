@@ -323,23 +323,6 @@
     margin-bottom: 3rem;
 }
 
-.stat-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 2rem;
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border-left: 4px solid #1976d2;
-    transition: all 0.3s;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
 .stat-icon {
     font-size: 3rem;
     min-width: 80px;
@@ -529,6 +512,52 @@
     margin: 0 auto;
 }
 
+.filter-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.filter-card.selected {
+    color: #fff;
+    background-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.filter-icon {
+    font-size: 2.5rem;
+    margin-right: 15px;
+}
+
+.filter-content {
+    text-align: left;
+}
+
+.filter-content h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.filter-content p {
+    margin: 0;
+    font-size: 1rem;
+    color: #666;
+}
+
+.filter-card.selected .filter-content h3,
+.filter-card.selected .filter-content p {
+    color: #fff;
+}
+
 /* Responsive Dashboard */
 @media (max-width: 1024px) {
     .appointment-card {
@@ -585,6 +614,10 @@
 
     .appointment-details h4 {
         font-size: 1.1rem;
+    }
+
+    .appointment-details p {
+        font-size: 0.85rem;
     }
 
     .appointment-status-actions {

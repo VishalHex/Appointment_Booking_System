@@ -10,7 +10,6 @@
     padding: 0 20px;
 }
 
-/* Progress Indicator */
 .progress-indicator {
     display: flex;
     justify-content: center;
@@ -131,12 +130,11 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1.5rem;
     border-bottom: 2px solid #f1f5f9;
     padding-bottom: 1rem;
 }
 
-.step-number {
+.step-number-appointment {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -147,24 +145,14 @@
     border-radius: 50%;
     font-weight: bold;
     font-size: 1.1rem;
-    flex-shrink: 0;
 }
 
 .step-header h2 {
-    margin: 0;
     color: #1e293b;
     font-size: 1.4rem;
     font-weight: 600;
 }
 
-.timezone-info {
-    margin-left: auto;
-    font-size: 0.8rem;
-    color: #64748b;
-    font-weight: 500;
-}
-
-/* Service Selection */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -277,7 +265,6 @@
     font-size: 1rem;
 }
 
-/* Date & Time Section */
 .date-time-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -292,7 +279,7 @@
 
 .calendar-section h3,
 .time-section h3 {
-    margin: 0 0 1rem;
+    margin: 0;
     color: #1e293b;
     font-size: 1.1rem;
     font-weight: 600;
@@ -304,7 +291,6 @@
     gap: 1rem;
 }
 
-/* Loading States */
 .loading-slots,
 .loading-spinner {
     display: flex;
@@ -322,7 +308,6 @@
     font-weight: 500;
 }
 
-/* Calendar Styling */
 .calendar-picker {
     background: #f8fafc;
     border-radius: 12px;
@@ -433,6 +418,7 @@
     border-color: #3b82f6;
     background: #eff6ff;
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
     transform: scale(1.05);
 }
 
@@ -443,7 +429,6 @@
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* Time Slots */
 .time-slots-container {
     display: flex;
     flex-direction: column;
@@ -501,7 +486,6 @@
     margin-top: 2px;
 }
 
-/* No Times Message */
 .no-times-message {
     padding: 2rem;
     text-align: center;
@@ -516,7 +500,6 @@
     font-weight: 500;
 }
 
-/* Booking Summary */
 .booking-summary {
     background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
     border-left: 4px solid #4caf50;
@@ -552,7 +535,6 @@
     font-size: 1.05rem;
 }
 
-/* Messages */
 .booking-success,
 .booking-error {
     padding: 1.2rem;
@@ -574,7 +556,6 @@
     border-left: 4px solid #f44336;
 }
 
-/* Action Buttons */
 .booking-actions {
     display: flex;
     gap: 1rem;
@@ -621,54 +602,11 @@
     transform: none;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .appointment-booking {
-        padding: 20px 15px;
-    }
-
-    .booking-header h1 {
-        font-size: 1.8rem;
-    }
-
-    .booking-section {
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .time-slots-compact {
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-        gap: 0.6rem;
-    }
-
-    .booking-actions {
-        flex-direction: column;
-    }
-
-    .booking-actions .btn {
-        width: 100%;
-    }
-}
-
-/* General Styling */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f9f9f9;
-    color: #333;
 }
-
-/* Confirmation Page Styling */
-/* .confirmation-page {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-} */
 
 .confirmation-page h2 {
     font-size: 24px;
@@ -677,8 +615,7 @@ body {
 }
 
 .confirmation-page p {
-    font-size: 16px;
-    line-height: 1.6;
+    margin: 0;
     color: #7f8c8d;
 }
 
@@ -745,4 +682,49 @@ body {
 
 .confirmation-page .actions .confirm-btn:hover {
     background-color: #2ecc71;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .booking-container {
+        padding: 0 5px;
+    }
+
+    .appointment-booking {
+        padding: 20px 15px;
+    }
+
+    .booking-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .booking-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .time-slots-compact {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 0.6rem;
+    }
+
+    .booking-actions {
+        flex-direction: column;
+    }
+
+    .booking-actions .btn {
+        width: 100%;
+    }
+
+    .date-time-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-card {
+        justify-content: start;
+    }
+
+    .filter-icon {
+        width: 45px;
+    }
 }

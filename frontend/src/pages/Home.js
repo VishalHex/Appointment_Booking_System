@@ -11,8 +11,10 @@ export default function Home() {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
 
   const [appointments, setAppointments] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]); // Store all appointments
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('upcoming');
+  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' }); // Custom date range
+  const [filterType, setFilterType] = useState('upcoming'); // Default to 'upcoming'
 
   useEffect(() => {
     if (token && user) {
@@ -20,7 +22,7 @@ export default function Home() {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, []); // Fetch all appointments on page load
 
   const fetchAppointments = async () => {
     try {
@@ -28,7 +30,8 @@ export default function Home() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const aptData = Array.isArray(res.data) ? res.data : res.data.appointments || [];
-      setAppointments(aptData);
+      setAllAppointments(aptData); // Store all appointments
+      setAppointments(aptData); // Initialize filtered appointments
     } catch (err) {
       console.error('Failed to fetch appointments:', err);
     } finally {
@@ -36,26 +39,25 @@ export default function Home() {
     }
   };
 
-  const handleCancelAppointment = async (appointmentId) => {
-    if (!window.confirm('Are you sure you want to cancel this appointment?')) return;
-
-    try {
-      await axios.delete(`${API_URL}/api/appointments/${appointmentId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAppointments(appointments.filter(a => a.id !== appointmentId));
-    } catch (err) {
-      console.error('Failed to cancel appointment:', err);
-    }
+  const handleCardClick = (type) => {
+    setFilterType(type);
   };
 
-  const filteredAppointments = appointments.filter(apt => {
-    const aptDate = new Date(apt.appointment_time);
-    const now = new Date();
-    if (filter === 'upcoming') return aptDate > now && apt.status !== 'cancelled';
-    if (filter === 'past') return aptDate <= now;
-    return true;
-  });
+  useEffect(() => {
+    let filteredAppointments = allAppointments;
+
+    if (filterType === 'upcoming') {
+      filteredAppointments = allAppointments.filter(
+        (apt) => new Date(apt.appointment_time) > new Date() && apt.status !== 'cancelled'
+      );
+    } else if (filterType === 'completed') {
+      filteredAppointments = allAppointments.filter((apt) => apt.status === 'completed');
+    } else if (filterType === 'cancelled') {
+      filteredAppointments = allAppointments.filter((apt) => apt.status === 'cancelled');
+    }
+
+    setAppointments(filteredAppointments);
+  }, [filterType, allAppointments]);
 
   const getStatusBadge = (status) => {
     const statusMap = {
@@ -64,6 +66,36 @@ export default function Home() {
       completed: { label: 'Completed', color: '#17a2b8', bgColor: '#e0f7fa' }
     };
     return statusMap[status] || { label: status, color: '#666', bgColor: '#f5f5f5' };
+  };
+
+  const handleCancelAppointment = async (appointmentId) => {
+    if (!window.confirm('Are you sure you want to cancel this appointment?')) {
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${API_URL}/api/appointments/${appointmentId}/cancel`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status === 200) {
+        alert('Appointment cancelled successfully.');
+        // Update the appointments list
+        setAllAppointments((prev) =>
+          prev.map((apt) =>
+            apt.id === appointmentId ? { ...apt, status: 'cancelled' } : apt
+          )
+        );
+        setAppointments((prev) =>
+          prev.map((apt) =>
+            apt.id === appointmentId ? { ...apt, status: 'cancelled' } : apt
+          )
+        );
+      }
+    } catch (err) {
+      console.error('Failed to cancel appointment:', err);
+      alert('Failed to cancel the appointment. Please try again later.');
+    }
   };
 
   // Show dashboard for authenticated users
@@ -86,60 +118,53 @@ export default function Home() {
 
           {/* Stats */}
           <div className="dashboard-stats">
-            <div className="stat-card">
-              <div className="stat-icon">📅</div>
-              <div className="stat-content">
-                <h3>{appointments.filter(a => new Date(a.appointment_time) > new Date() && a.status !== 'cancelled').length}</h3>
+            <div
+              className={`filter-card ${filterType === 'upcoming' ? 'selected' : ''}`}
+              onClick={() => handleCardClick('upcoming')}
+            >
+              <div className="filter-icon">📅</div>
+              <div className="filter-content">
+                <h3>{allAppointments.filter(a => new Date(a.appointment_time) > new Date() && a.status !== 'cancelled').length}</h3>
                 <p>Upcoming Appointments</p>
               </div>
             </div>
-            <div className="stat-card">
-              <div className="stat-icon">✓</div>
-              <div className="stat-content">
-                <h3>{appointments.filter(a => a.status === 'completed').length}</h3>
+            <div
+              className={`filter-card ${filterType === 'completed' ? 'selected' : ''}`}
+              onClick={() => handleCardClick('completed')}
+            >
+              <div className="filter-icon">✓</div>
+              <div className="filter-content">
+                <h3>{allAppointments.filter(a => a.status === 'completed').length}</h3>
                 <p>Completed</p>
               </div>
             </div>
-            <div className="stat-card">
-              <div className="stat-icon">✕</div>
-              <div className="stat-content">
-                <h3>{appointments.filter(a => a.status === 'cancelled').length}</h3>
+            <div
+              className={`filter-card ${filterType === 'cancelled' ? 'selected' : ''}`}
+              onClick={() => handleCardClick('cancelled')}
+            >
+              <div className="filter-icon">✕</div>
+              <div className="filter-content">
+                <h3>{allAppointments.filter(a => a.status === 'cancelled').length}</h3>
                 <p>Cancelled</p>
               </div>
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="dashboard-filters">
-            <button
-              className={`filter-btn ${filter === 'upcoming' ? 'active' : ''}`}
-              onClick={() => setFilter('upcoming')}
-            >
-              Upcoming
-            </button>
-            <button
-              className={`filter-btn ${filter === 'past' ? 'active' : ''}`}
-              onClick={() => setFilter('past')}
-            >
-              Past
-            </button>
-          </div>
-
           {/* Appointments List */}
           <div className="appointments-list">
-            {filteredAppointments.length === 0 ? (
+            {appointments.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">📭</div>
-                <h3>No {filter} appointments</h3>
-                <p>You have no {filter} appointments at the moment.</p>
-                <div class="d-inline-block">
+                <h3>No appointments found</h3>
+                <p>Try adjusting your filters to find appointments.</p>
+                <div className="d-inline-block">
                   <button onClick={() => navigate('/book')} className="btn btn-primary">
                     Book First Appointment
                   </button>
                 </div>
               </div>
             ) : (
-              filteredAppointments.map(apt => {
+              appointments.map(apt => {
                 const statusInfo = getStatusBadge(apt.status);
                 return (
                   <div key={apt.id} className="appointment-card">
@@ -154,7 +179,7 @@ export default function Home() {
                       </div>
                       <div className="appointment-details">
                         <h4>{apt.provider?.service_name || 'Appointment'}</h4>
-                        <p className="provider">{apt.provider?.service_name || `Provider #${apt.provider_id}`}</p>
+                        <p className="provider">{apt.provider?.description || `Provider #${apt.provider_id}`}</p>
                         <p className="time">
                           🕐 {new Date(apt.appointment_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </p>

@@ -16,6 +16,10 @@ export default function Navbar() {
     window.location.reload();
   };
 
+  const isActive = (path) => {
+    return window.location.pathname === path ? 'active-link' : '';
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -37,12 +41,30 @@ export default function Navbar() {
         </button>
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          <li><Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
-          {token && <li><Link to="/book" className="nav-link" onClick={() => setIsMenuOpen(false)}>Book Appointment</Link></li>}
+          <li>
+            <Link to="/" className={`nav-link ${isActive('/')}`} onClick={() => setIsMenuOpen(false)}>
+              Home
+            </Link>
+          </li>
+          {token && (
+            <li>
+              <Link to="/book" className={`nav-link ${isActive('/book')}`} onClick={() => setIsMenuOpen(false)}>
+                Book Appointment
+              </Link>
+            </li>
+          )}
           {!token && (
             <>
-              <li><Link to="/login" className="nav-link" onClick={() => setIsMenuOpen(false)}>Login</Link></li>
-              <li><Link to="/register" className="nav-link" onClick={() => setIsMenuOpen(false)}>Register</Link></li>
+              <li>
+                <Link to="/login" className={`nav-link ${isActive('/login')}`} onClick={() => setIsMenuOpen(false)}>
+                  Login
+                </Link>
+              </li>
+              <li>
+                <Link to="/register" className={`nav-link ${isActive('/register')}`} onClick={() => setIsMenuOpen(false)}>
+                  Register
+                </Link>
+              </li>
             </>
           )}
         </ul>

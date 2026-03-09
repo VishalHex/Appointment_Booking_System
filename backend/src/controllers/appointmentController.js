@@ -1,6 +1,7 @@
 // Appointment Controller
 // Handles booking, viewing, and cancelling appointments
 import { Appointment, Provider, User } from '../models.js';
+import { Op } from 'sequelize';
 
 // Book an appointment
 export async function bookAppointment(req, res) {
@@ -55,23 +56,33 @@ export async function cancelAppointment(req, res) {
 export async function listAppointments(req, res) {
   try {
     let where = {};
+
     if (req.user.role === 'client') where.client_id = req.user.id;
     if (req.user.role === 'provider') where.provider_id = req.user.provider_id;
+
+    const now = new Date();
+    // Fetch all appointments for the user without filtering by status or time
+    if (req.user.role === 'client') {
+      where.client_id = req.user.id;
+    } else if (req.user.role === 'provider') {
+      where.provider_id = req.user.provider_id;
+    }
+
     const appointments = await Appointment.findAll({
       where,
       include: [
-        { model: Provider, attributes: ['id', 'service_name'], required: false },
+        { model: Provider, attributes: ['id', 'service_name', 'description'], required: false },
         { model: User, as: 'client', attributes: ['id', 'name', 'email'], required: false }
       ],
       order: [['appointment_time', 'ASC']],
-      raw: false
     });
-    // Convert Sequelize instances to plain objects with nested associations
+
     const plainAppointments = appointments.map(apt => ({
       ...apt.toJSON(),
       provider: apt.provider ? apt.provider.toJSON() : null,
       client: apt.client ? apt.client.toJSON() : null
     }));
+
     res.json({ appointments: plainAppointments });
   } catch (err) {
     console.error('Error fetching appointments:', err);

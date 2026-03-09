@@ -259,6 +259,12 @@ export default function AppointmentBooking() {
     fetchProviders();
   }, [token]);
 
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  }, [token, navigate]);
+
   if (loading) {
     return (
       <div className="appointment-booking">
@@ -285,7 +291,7 @@ export default function AppointmentBooking() {
         {/* Step 1: Select Provider */}
         <div className="booking-section">
           <div className="step-header">
-            <span className="step-number">1</span>
+            <span className="step-number-appointment">1</span>
             <h2>Select a Service</h2>
           </div>
 
@@ -334,11 +340,8 @@ export default function AppointmentBooking() {
         {selectedProvider && (
           <div className="booking-section">
             <div className="step-header">
-              <span className="step-number">2</span>
+              <span className="step-number-appointment">2</span>
               <h2>Select Date & Time</h2>
-              <div className="timezone-info">
-                Times shown in your local timezone
-              </div>
             </div>
 
             {fetchingSlots ? (
@@ -415,7 +418,10 @@ export default function AppointmentBooking() {
         {/* Step 3: Confirm Booking */}
         {selectedProvider && selectedSlot && (
           <div className="booking-section confirmation-page">
-            <h2>Confirm Your Booking</h2>
+            <div className="step-header">
+              <span className="step-number-appointment">3</span>
+              <h2>Confirm Your Booking</h2>
+            </div>
             <p>Please review your booking details below:</p>
             <div className="details">
               <h4>Booking Details</h4>
