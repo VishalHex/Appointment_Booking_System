@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
+import { FaCalendarDay, FaCheck, FaClock, FaPlus, FaTimes } from 'react-icons/fa';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -13,7 +14,6 @@ export default function Home() {
   const [appointments, setAppointments] = useState([]);
   const [allAppointments, setAllAppointments] = useState([]); // Store all appointments
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' }); // Custom date range
   const [filterType, setFilterType] = useState('upcoming'); // Default to 'upcoming'
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export default function Home() {
             </div>
             <div>
               <button onClick={() => navigate('/book')} className="btn btn-primary">
-                + Book New Appointment
+                <FaPlus className='mr-2' /> Book New Appointment
               </button>
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function Home() {
               className={`filter-card ${filterType === 'upcoming' ? 'selected' : ''}`}
               onClick={() => handleCardClick('upcoming')}
             >
-              <div className="filter-icon">📅</div>
+              <div className="filter-icon"><FaCalendarDay /></div>
               <div className="filter-content">
                 <h3>{allAppointments.filter(a => new Date(a.appointment_time) > new Date() && a.status !== 'cancelled').length}</h3>
                 <p>Upcoming Appointments</p>
@@ -132,7 +132,7 @@ export default function Home() {
               className={`filter-card ${filterType === 'completed' ? 'selected' : ''}`}
               onClick={() => handleCardClick('completed')}
             >
-              <div className="filter-icon">✓</div>
+              <div className="filter-icon"><FaCheck color='#28a745' /></div>
               <div className="filter-content">
                 <h3>{allAppointments.filter(a => a.status === 'completed').length}</h3>
                 <p>Completed</p>
@@ -142,7 +142,7 @@ export default function Home() {
               className={`filter-card ${filterType === 'cancelled' ? 'selected' : ''}`}
               onClick={() => handleCardClick('cancelled')}
             >
-              <div className="filter-icon">✕</div>
+              <div className="filter-icon"><FaTimes color='#dc3545' /></div>
               <div className="filter-content">
                 <h3>{allAppointments.filter(a => a.status === 'cancelled').length}</h3>
                 <p>Cancelled</p>
@@ -181,7 +181,7 @@ export default function Home() {
                         <h4>{apt.provider?.service_name || 'Appointment'}</h4>
                         <p className="provider">{apt.provider?.description || `Provider #${apt.provider_id}`}</p>
                         <p className="time">
-                          🕐 {new Date(apt.appointment_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                          <FaClock className='mr-1' /> {new Date(apt.appointment_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
                     </div>

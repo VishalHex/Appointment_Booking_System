@@ -2,6 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../pages/AppointmentBooking.css';
+import { FaCalendarDay, FaCheck, FaClock, FaLongArrowAltLeft, FaTools } from 'react-icons/fa';
+import { FaSackDollar } from 'react-icons/fa6';
+import { FcProcess } from 'react-icons/fc';
+
 
 const API_URL = process.env.REACT_APP_API_URL;
 // timezone used throughout for display
@@ -143,6 +147,9 @@ export default function AppointmentBooking() {
   const [booking, setBooking] = useState(false);
   const [message, setMessage] = useState('');
 
+  // Add a new state for message success or failure
+  const [isMessageSuccess, setIsMessageSuccess] = useState(null);
+
   // Calculate current step
   const getCurrentStep = () => {
     if (!selectedProvider) return 0;
@@ -173,6 +180,7 @@ export default function AppointmentBooking() {
   const handleBookAppointment = async () => {
     if (!selectedProvider || !selectedSlot) {
       setMessage('Please select a provider and time slot');
+      setIsMessageSuccess(false);
       return;
     }
 
@@ -187,13 +195,14 @@ export default function AppointmentBooking() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMessage('✓ Appointment booked successfully! You will receive a confirmation email.');
+      setIsMessageSuccess(true);
       setTimeout(() => {
         navigate('/dashboard');
       }, 2000);
     } catch (err) {
-      // display backend error message if available, otherwise generic message
       const errorMsg = err.response?.data?.error || 'Failed to book appointment. Please try again.';
       setMessage(`✗ ${errorMsg}`);
+      setIsMessageSuccess(false);
     } finally {
       setBooking(false);
     }
@@ -284,7 +293,7 @@ export default function AppointmentBooking() {
         <ProgressIndicator currentStep={getCurrentStep()} totalSteps={3} />
 
         <div className="booking-header">
-          <h1>🗓️ Book an Appointment</h1>
+          <h1 className='d-flex-all'>{<FaCalendarDay className='mr-2' color='#3b82f6' />} Book an Appointment</h1>
           <p>Choose a service, date, and time that works best for you</p>
         </div>
 
@@ -308,12 +317,12 @@ export default function AppointmentBooking() {
                   className={`service-card ${selectedProvider?.id === provider.id ? 'selected' : ''}`}
                   onClick={() => setSelectedProvider(provider)}
                 >
-                  <div className="service-icon">🛠️</div>
+                  <div className="service-icon"><FaTools /></div>
                   <div className="service-info">
                     <h3>{provider.service_name}</h3>
                     <div className="service-details">
-                      <span className="duration">⏱️ 60 min</span>
-                      <span className="price">💰 $100</span>
+                      <span className="duration"><FaClock className='mr-1' color='#ff6c6c' /> 60 min</span>
+                      <span className="price"><FaSackDollar className='mr-1' color='#10b981' /> $100</span>
                     </div>
                     <p className="service-description">
                       Professional service with expert consultation and follow-up support.
@@ -447,19 +456,19 @@ export default function AppointmentBooking() {
             </div>
             <div className="actions">
               <button onClick={() => navigate('/dashboard')} className="back-btn">
-                ← Back
+                <FaLongArrowAltLeft className='mr-2' /> Back
               </button>
               <button
                 onClick={handleBookAppointment}
                 disabled={!selectedProvider || !selectedSlot || booking}
                 className="confirm-btn"
               >
-                {booking ? '⏳ Booking...' : '✓ Confirm Booking'}
+                {booking ? <><FcProcess className='mr-2' /> ' Booking...'</> : <><FaCheck className='mr-2' /> Confirm Booking</>}
               </button>
             </div>
             {/* Message */}
             {message && (
-              <div className={message.includes('✓') ? 'booking-success' : 'booking-error'}>
+              <div className={isMessageSuccess ? 'booking-success' : 'booking-error'}>
                 {message}
               </div>
             )}

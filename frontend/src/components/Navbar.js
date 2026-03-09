@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
+import { FaCalendarAlt } from 'react-icons/fa';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,7 +26,7 @@ export default function Navbar() {
       <div className="navbar-container">
         <div className="navbar-logo">
           <Link to="/">
-            <span className="logo-icon">📅</span>
+            <span className="logo-icon"><FaCalendarAlt /></span>
             <span className="logo-text">AppointmentPro</span>
           </Link>
         </div>

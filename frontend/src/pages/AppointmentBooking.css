@@ -211,6 +211,8 @@
     font-size: 0.85rem;
     color: #64748b;
     font-weight: 500;
+    display: flex;
+    align-items: center;
 }
 
 .service-description {
@@ -664,6 +666,9 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .confirmation-page .actions .back-btn {

@@ -58,14 +58,14 @@ export async function listAppointments(req, res) {
     let where = {};
 
     if (req.user.role === 'client') where.client_id = req.user.id;
-    if (req.user.role === 'provider') where.provider_id = req.user.provider_id;
+    if (req.user.role === 'provider') where.provider_id = req.user.id;
 
     const now = new Date();
     // Fetch all appointments for the user without filtering by status or time
     if (req.user.role === 'client') {
       where.client_id = req.user.id;
     } else if (req.user.role === 'provider') {
-      where.provider_id = req.user.provider_id;
+      where.provider_id = req.user.id;
     }
 
     const appointments = await Appointment.findAll({
