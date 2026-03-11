@@ -304,7 +304,7 @@
 
 /* ============== Dashboard Styles ============== */
 
-.dashboard-container {
+.container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
@@ -576,6 +576,10 @@
     color: #fff;
 }
 
+.mb-1 {
+    margin-bottom: .5rem;
+}
+
 /* Responsive Dashboard */
 @media (max-width: 1024px) {
     .appointment-card {
@@ -605,7 +609,7 @@
         font-size: 1.8rem;
     }
 
-    .dashboard-container {
+    .container {
         padding: 20px 15px;
     }
 

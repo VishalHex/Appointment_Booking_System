@@ -4,22 +4,22 @@ import winston from 'winston';
 import dotenv from 'dotenv';
 import router from './routes.js';
 import { errorHandler, validateRegistration } from './middleware.js';
+import { Server } from 'socket.io';
+import http from 'http';
 
 dotenv.config();
-// Force Node to operate in IST for all date handling
 process.env.TZ = 'Asia/Kolkata';
 const app = express();
-// Allow CORS for frontend origin
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 app.use(cors({
   origin: [
     // 'https://your-frontend-domain.com',
-    'http://localhost:3000'
+    frontendUrl
   ],
   credentials: true
 }));
 app.use(express.json());
 
-// Logger setup
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
@@ -38,7 +38,6 @@ app.get('/', (req, res) => {
 app.use('/api', router);
 app.use(errorHandler);
 
-// Attempt database connection if using real DB
 import sequelize from './models.js';
 async function startServer() {
   if (sequelize) {
@@ -60,3 +59,17 @@ async function startServer() {
 }
 
 startServer();
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: frontendUrl,
+    methods: ['GET', 'POST', 'PATCH'],
+  },
+});
+
+export { io };
+
+server.listen(process.env.PORT || 3001, () => {
+  logger.info(`Server is running on port ${process.env.PORT || 3001}`);
+});

@@ -1,6 +1,5 @@
 import { body, validationResult } from 'express-validator';
 
-// Validation middleware for registration
 export const validateRegistration = [
   body('name').isLength({ min: 2 }).withMessage('Name required'),
   body('email').isEmail().withMessage('Valid email required'),
@@ -14,7 +13,6 @@ export const validateRegistration = [
   }
 ];
 
-// Global error handler
 export function errorHandler(err, req, res, next) {
   req.app.get('logger').error(err.message, { stack: err.stack });
   res.status(500).json({ error: 'Internal Server Error' });

@@ -11,10 +11,12 @@ export default function Home() {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || 'null');
 
+  user?.role === 'provider' && navigate('/provider-dashboard');
+
   const [appointments, setAppointments] = useState([]);
-  const [allAppointments, setAllAppointments] = useState([]); // Store all appointments
+  const [allAppointments, setAllAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterType, setFilterType] = useState('upcoming'); // Default to 'upcoming'
+  const [filterType, setFilterType] = useState('booked');
 
   useEffect(() => {
     if (token && user) {
@@ -22,7 +24,7 @@ export default function Home() {
     } else {
       setLoading(false);
     }
-  }, []); // Fetch all appointments on page load
+  }, []);
 
   const fetchAppointments = async () => {
     try {
@@ -30,8 +32,8 @@ export default function Home() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const aptData = Array.isArray(res.data) ? res.data : res.data.appointments || [];
-      setAllAppointments(aptData); // Store all appointments
-      setAppointments(aptData); // Initialize filtered appointments
+      setAllAppointments(aptData);
+      setAppointments(aptData);
     } catch (err) {
       console.error('Failed to fetch appointments:', err);
     } finally {
@@ -46,9 +48,13 @@ export default function Home() {
   useEffect(() => {
     let filteredAppointments = allAppointments;
 
-    if (filterType === 'upcoming') {
+    if (filterType === 'booked') {
       filteredAppointments = allAppointments.filter(
-        (apt) => new Date(apt.appointment_time) > new Date() && apt.status !== 'cancelled'
+        (apt) => new Date(apt.appointment_time) > new Date() && apt.status === 'booked'
+      );
+    } else if (filterType === 'expired') {
+      filteredAppointments = allAppointments.filter(
+        (apt) => new Date(apt.appointment_time) <= new Date() && apt.status === 'booked'
       );
     } else if (filterType === 'completed') {
       filteredAppointments = allAppointments.filter((apt) => apt.status === 'completed');
@@ -62,6 +68,7 @@ export default function Home() {
   const getStatusBadge = (status) => {
     const statusMap = {
       booked: { label: 'Accepted', color: '#28a745', bgColor: '#e8f5e9' },
+      expired: { label: 'Expired', color: '#ffc107', bgColor: '#fff3cd' },
       cancelled: { label: 'Cancelled', color: '#dc3545', bgColor: '#ffebee' },
       completed: { label: 'Completed', color: '#17a2b8', bgColor: '#e0f7fa' }
     };
@@ -80,7 +87,6 @@ export default function Home() {
 
       if (res.status === 200) {
         alert('Appointment cancelled successfully.');
-        // Update the appointments list
         setAllAppointments((prev) =>
           prev.map((apt) =>
             apt.id === appointmentId ? { ...apt, status: 'cancelled' } : apt
@@ -98,11 +104,10 @@ export default function Home() {
     }
   };
 
-  // Show dashboard for authenticated users
   if (token && user && !loading) {
     return (
       <div className="home">
-        <div className="dashboard-container">
+        <div className="container">
           {/* Header */}
           <div className="dashboard-header">
             <div>
@@ -116,16 +121,24 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Stats */}
           <div className="dashboard-stats">
             <div
-              className={`filter-card ${filterType === 'upcoming' ? 'selected' : ''}`}
-              onClick={() => handleCardClick('upcoming')}
+              className={`filter-card ${filterType === 'booked' ? 'selected' : ''}`}
+              onClick={() => handleCardClick('booked')}
             >
               <div className="filter-icon"><FaCalendarDay /></div>
               <div className="filter-content">
-                <h3>{allAppointments.filter(a => new Date(a.appointment_time) > new Date() && a.status !== 'cancelled').length}</h3>
+                <h3>{allAppointments.filter(a => new Date(a.appointment_time) > new Date() && a.status === 'booked').length}</h3>
                 <p>Upcoming Appointments</p>
+              </div>
+            </div>
+            <div
+              className={`filter-card ${filterType === 'expired' ? 'selected' : ''}`}
+              onClick={() => handleCardClick('expired')}>
+              <div className="filter-icon"><FaClock color='#ffc107' /></div>
+              <div className="filter-content">
+                <h3>{allAppointments.filter(a => new Date(a.appointment_time) <= new Date() && a.status === 'booked').length}</h3>
+                <p>Expired Appointments</p>
               </div>
             </div>
             <div
@@ -150,7 +163,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Appointments List */}
           <div className="appointments-list">
             {appointments.length === 0 ? (
               <div className="empty-state">
@@ -180,6 +192,7 @@ export default function Home() {
                       <div className="appointment-details">
                         <h4>{apt.provider?.service_name || 'Appointment'}</h4>
                         <p className="provider">{apt.provider?.description || `Provider #${apt.provider_id}`}</p>
+                        <p style={{ marginTop: '10px' }}>Contact Person: {apt?.provider?.user ? apt.provider.user.name || 'N/A' : 'N/A'}</p>
                         <p className="time">
                           <FaClock className='mr-1' /> {new Date(apt.appointment_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </p>
@@ -200,7 +213,7 @@ export default function Home() {
                       >
                         {statusInfo.label}
                       </span>
-                      {new Date(apt.appointment_time) > new Date() && apt.status !== 'cancelled' && (
+                      {new Date(apt.appointment_time) > new Date() && apt.status === 'booked' && (
                         <button
                           className="btn btn-secondary"
                           onClick={() => handleCancelAppointment(apt.id)}
@@ -219,7 +232,6 @@ export default function Home() {
     );
   }
 
-  // Show loading state
   if (loading) {
     return <div className="home"><div className="spinner"></div></div>;
   }
@@ -241,9 +253,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="features">
-        <div className="container">
+        <div className="static-container">
           <h2 className="section-title">Why Choose AppointmentPro?</h2>
           <div className="features-grid">
             <div className="feature-card">
@@ -280,9 +291,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section className="how-it-works">
-        <div className="container">
+        <div className="static-container">
           <h2 className="section-title">How It Works</h2>
           <div className="steps">
             <div className="step">
@@ -312,7 +322,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="cta">
         <div className="cta-content">
           <h2>Ready to streamline your appointments?</h2>
@@ -323,9 +332,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="footer">
-        <div className="container">
+        <div className="static-container">
           <p>&copy; 2026 AppointmentPro. All rights reserved.</p>
           <div className="footer-links">
             <a href="#privacy">Privacy Policy</a>

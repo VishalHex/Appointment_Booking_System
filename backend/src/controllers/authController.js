@@ -3,7 +3,6 @@ import { registerUser, authenticateUser } from '../services/authService.js';
 export async function register(req, res) {
   try {
     const user = await registerUser(req.body);
-    // Remove sensitive fields before sending response
     const { password_hash, ...safeUser } = user.toJSON();
     res.status(201).json({ user: safeUser });
   } catch (err) {
@@ -19,7 +18,6 @@ export async function login(req, res) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     const { user, token } = authResult;
-    // Remove sensitive fields before sending response
     const { password_hash, ...safeUser } = user.toJSON();
     res.json({ user: safeUser, token });
   } catch (err) {

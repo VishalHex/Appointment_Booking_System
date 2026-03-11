@@ -42,15 +42,24 @@ export default function Navbar() {
         </button>
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          <li>
-            <Link to="/" className={`nav-link ${isActive('/')}`} onClick={() => setIsMenuOpen(false)}>
-              Home
-            </Link>
-          </li>
-          {token && (
+          {user?.role !== 'provider' && (
+            <li>
+              <Link to="/" className={`nav-link ${isActive('/')}`} onClick={() => setIsMenuOpen(false)}>
+                Home
+              </Link>
+            </li>
+          )}
+          {token && user?.role === 'client' && (
             <li>
               <Link to="/book" className={`nav-link ${isActive('/book')}`} onClick={() => setIsMenuOpen(false)}>
                 Book Appointment
+              </Link>
+            </li>
+          )}
+          {token && user?.role === 'provider' && (
+            <li>
+              <Link to="/provider-dashboard" className={`nav-link ${isActive('/provider-dashboard')}`} onClick={() => setIsMenuOpen(false)}>
+                Provider Dashboard
               </Link>
             </li>
           )}

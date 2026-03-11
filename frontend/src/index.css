@@ -70,7 +70,7 @@ a:hover {
   color: #1a5490;
 }
 
-.container {
+.static-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;

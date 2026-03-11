@@ -15,16 +15,15 @@ export async function registerProvider(req, res) {
   }
 }
 
-// List all providers
 export async function listProviders(req, res) {
   try {
-    const providers = await Provider.findAll({ include: [{ model: User, attributes: ['name', 'email'] }] });
+    const providers = await Provider.findAll({ include: [{ model: User, as: 'user', attributes: ['name', 'email'] }] });
     const flattenedProviders = providers.map(p => ({
       id: p.id,
       service_name: p.service_name,
       service_description: p.description,
-      name: p.User?.name || 'Service Provider',
-      email: p.User?.email
+      name: p.user?.name || 'Service Provider',
+      email: p.user?.email
     }));
     res.json(flattenedProviders);
   } catch (err) {
@@ -32,7 +31,6 @@ export async function listProviders(req, res) {
   }
 }
 
-// Get provider calendar (appointments)
 export async function providerCalendar(req, res) {
   try {
     const { providerId } = req.params;
@@ -40,7 +38,6 @@ export async function providerCalendar(req, res) {
       where: { provider_id: providerId },
       order: [['appointment_time', 'ASC']]
     });
-    // Format appointment_time to IST string (no Z) to match slots format
     const formattedAppointments = appointments.map(apt => {
       const d = apt.appointment_time;
       const yr = d.getFullYear();
@@ -60,18 +57,15 @@ export async function providerCalendar(req, res) {
   }
 }
 
-// Get available slots for a provider
 export async function getProviderSlots(req, res) {
   try {
     const { providerId } = req.params;
 
-    // Validate providerId
     const provider = await Provider.findByPk(providerId);
     if (!provider) {
       return res.status(404).json({ error: 'Provider not found' });
     }
 
-    // Generate slots for 4 months (120 days)
     const slots = [];
     const now = new Date();
     const maxDate = new Date(now.getTime() + 120 * 24 * 60 * 60 * 1000);
@@ -85,7 +79,6 @@ export async function getProviderSlots(req, res) {
       // const dayOfWeek = date.getDay();
       // if (dayOfWeek === 0 || dayOfWeek === 6) continue; // Skip Sunday (0) and Saturday (6)
 
-      // Generate slots for each day (e.g., 9 AM to 5 PM, every hour)
       for (let hour = 9; hour < 17; hour++) {
         const slot = new Date(date);
         slot.setHours(hour, 0, 0, 0);

@@ -4,20 +4,17 @@ import {
 	bookAppointment,
 	cancelAppointment,
 	listAppointments,
-	listAvailableSlots
+	listAvailableSlots,
+	updateAppointmentStatus
 } from '../controllers/appointmentController.js';
 
 const router = express.Router();
 
 
-// Book an appointment
 router.post('/', requireAuth(['client']), bookAppointment);
-// Cancel an appointment
 router.post('/:id/cancel', requireAuth(['client']), cancelAppointment);
-router.delete('/:id', requireAuth(['client']), cancelAppointment);
-// List appointments for user/provider
 router.get('/', requireAuth(['client', 'provider', 'admin']), listAppointments);
-// List available slots for a provider
 router.get('/provider/:providerId/slots', listAvailableSlots);
+router.patch('/:id/status', requireAuth(['provider']), updateAppointmentStatus);
 
 export default router;

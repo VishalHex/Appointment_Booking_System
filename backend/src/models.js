@@ -16,7 +16,7 @@ if (!USE_LOCAL_DB) {
     {
       host: process.env.DB_HOST || 'localhost',
       dialect: 'postgres',
-      timezone: '+05:30' // ensure Sequelize writes timestamps in IST
+      timezone: '+05:30'
     }
   );
 }
@@ -39,10 +39,9 @@ export const Appointment = !USE_LOCAL_DB ? sequelize.define('appointment', {
   reminder_sent: { type: DataTypes.BOOLEAN, defaultValue: false },
 }, { timestamps: true, underscored: true }) : null;
 
-// Associations
 if (!USE_LOCAL_DB) {
   User.hasMany(Provider, { foreignKey: 'user_id' });
-  Provider.belongsTo(User, { foreignKey: 'user_id' });
+  Provider.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
   User.hasMany(Appointment, { foreignKey: 'client_id' });
   Appointment.belongsTo(User, { foreignKey: 'client_id', as: 'client' });
@@ -51,7 +50,6 @@ if (!USE_LOCAL_DB) {
   Appointment.belongsTo(Provider, { foreignKey: 'provider_id' });
 }
 
-// Local data helpers
 function readLocalData(file) {
   try {
     const data = fs.readFileSync(path.join(localDataPath, file), 'utf-8');

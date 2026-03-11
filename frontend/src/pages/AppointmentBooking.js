@@ -8,10 +8,8 @@ import { FcProcess } from 'react-icons/fc';
 
 
 const API_URL = process.env.REACT_APP_API_URL;
-// timezone used throughout for display
 const TIMEZONE = 'Asia/Kolkata';
 
-// Progress Indicator Component
 function ProgressIndicator({ currentStep, totalSteps }) {
   return (
     <div className="progress-indicator">
@@ -31,7 +29,6 @@ function ProgressIndicator({ currentStep, totalSteps }) {
   );
 }
 
-// Calendar Component
 function CalendarPicker({ selectedDate, onSelectDate, allSlots }) {
   const [currentMonth, setCurrentMonth] = useState(() => {
     if (selectedDate) {
@@ -140,31 +137,26 @@ export default function AppointmentBooking() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  // Define state variables
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [booking, setBooking] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Add a new state for message success or failure
   const [isMessageSuccess, setIsMessageSuccess] = useState(null);
 
-  // Calculate current step
   const getCurrentStep = () => {
     if (!selectedProvider) return 0;
     if (!selectedSlot) return 1;
     return 2;
   };
 
-  // Filter slots for selected date
   const getDaySlots = () => {
     if (!selectedDate || !allSlots.length) return [];
     const selectedDateStr = selectedDate.split('T')[0];
     return allSlots.filter(slot => slot.split('T')[0] === selectedDateStr);
   };
 
-  // Get available slots (not booked by user)
   const getAvailableSlots = () => {
     const daySlots = getDaySlots();
     if (!userAppointments.length) return daySlots;
@@ -208,7 +200,6 @@ export default function AppointmentBooking() {
     }
   };
 
-  // Added missing state variables
   const [allSlots, setAllSlots] = useState([]);
   const [userAppointments, setUserAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -260,8 +251,8 @@ export default function AppointmentBooking() {
       } catch (err) {
         console.error('Failed to fetch providers:', err);
       } finally {
-        setLoading(false); // Ensure loading is set to false after fetching
-        setMessage(''); // Clear any previous messages
+        setLoading(false);
+        setMessage('');
       }
     };
 
@@ -327,6 +318,8 @@ export default function AppointmentBooking() {
                     <p className="service-description">
                       Professional service with expert consultation and follow-up support.
                     </p>
+                    <div style={{ marginTop: '10px' }}>Contact Person: {provider.name || 'Not specified'}</div>
+
                   </div>
                   {selectedProvider?.id === provider.id && (
                     <div className="selected-indicator">✓</div>

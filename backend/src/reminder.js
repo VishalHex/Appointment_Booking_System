@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-// For SMS, you can use Twilio or similar service (placeholder below)
 
 export async function sendEmailReminder(to, subject, text) {
   try {
@@ -24,7 +23,6 @@ export async function sendEmailReminder(to, subject, text) {
 
 export async function sendSMSReminder(to, message) {
   try {
-    // Integrate with Twilio or other SMS provider here
     // Example placeholder:
     // await twilioClient.messages.create({ to, from: process.env.TWILIO_FROM, body: message });
     return true;

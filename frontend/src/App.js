@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AppointmentBooking from './pages/AppointmentBooking';
+import ProviderDashboard from './pages/ProviderDashboard';
 
 function App() {
   return (
@@ -28,7 +29,22 @@ function App() {
             </ProtectedAuthPages>
           }
         />
-        <Route path="/book" element={<AppointmentBooking />} />
+        <Route
+          path="/book"
+          element={
+            <ProtectedRoute>
+              <AppointmentBooking />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/provider-dashboard"
+          element={
+            <ProtectedRoute>
+              <ProviderDashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
@@ -41,9 +57,19 @@ function ProtectedAuthPages({ children }) {
 
   useEffect(() => {
     if (token) {
-      navigate('/'); // Redirect logged-in users to the home page
+      navigate('/');
     }
   }, [token, navigate]);
+
+  return children;
+}
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
 
   return children;
 }
