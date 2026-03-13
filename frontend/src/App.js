@@ -6,8 +6,21 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AppointmentBooking from './pages/AppointmentBooking';
 import ProviderDashboard from './pages/ProviderDashboard';
+import axios from 'axios';
 
 function App() {
+  axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && error.response.data.logout) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+      return Promise.reject(error);
+    }
+  );
+
   return (
     <Router>
       <Navbar />

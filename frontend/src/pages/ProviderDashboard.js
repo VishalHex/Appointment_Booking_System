@@ -4,6 +4,7 @@ import '../pages/ProviderDashboard.css';
 import { io } from 'socket.io-client';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaCalendarDay, FaCheck, FaTimes } from 'react-icons/fa';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -109,12 +110,49 @@ export default function ProviderDashboard() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <select className="status-filter" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-                        <option value="all">All</option>
-                        <option value="booked">Booked</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
+                </div>
+
+                <div className="dashboard-stats">
+                    <div
+                        className={`filter-card ${filterStatus === 'all' ? 'selected' : ''}`}
+                        onClick={() => setFilterStatus('all')}
+                    >
+                        <div className="filter-icon"><FaCalendarDay /></div>
+                        <div className="filter-content">
+                            <h3>{appointments.length}</h3>
+                            <p>All</p>
+                        </div>
+                    </div>
+                    <div
+                        className={`filter-card ${filterStatus === 'booked' ? 'selected' : ''}`}
+                        onClick={() => setFilterStatus('booked')}
+                    >
+                        <div className="filter-icon"><FaCheck /></div>
+                        <div className="filter-content">
+                            <h3>{appointments.filter(a => a.status === 'booked').length}</h3>
+                            <p>Booked</p>
+                        </div>
+                    </div>
+                    <div
+                        className={`filter-card ${filterStatus === 'completed' ? 'selected' : ''}`}
+                        onClick={() => setFilterStatus('completed')}
+                    >
+                        <div className="filter-icon"><FaCheck color='#28a745' /></div>
+                        <div className="filter-content">
+                            <h3>{appointments.filter(a => a.status === 'completed').length}</h3>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                    <div
+                        className={`filter-card ${filterStatus === 'cancelled' ? 'selected' : ''}`}
+                        onClick={() => setFilterStatus('cancelled')}
+                    >
+                        <div className="filter-icon"><FaTimes color='#dc3545' /></div>
+                        <div className="filter-content">
+                            <h3>{appointments.filter(a => a.status === 'cancelled').length}</h3>
+                            <p>Cancelled</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="appointments-section">

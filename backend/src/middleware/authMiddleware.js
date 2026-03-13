@@ -15,7 +15,7 @@ export function requireAuth(roles = []) {
       req.user = decoded;
       next();
     } catch (err) {
-      return res.status(401).json({ error: 'Invalid token' });
+      return res.status(401).json({ error: 'Invalid token', logout: true });
     }
   };
 }
