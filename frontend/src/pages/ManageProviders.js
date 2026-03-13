@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './ManageProviders.css';
+import { FaRegUser } from 'react-icons/fa';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -101,21 +102,21 @@ export default function ManageProviders() {
 
       <div className="admin-stats">
         <div className="stat-card">
-          <div className="stat-icon">🏥</div>
+          <div className="stat-icon"><FaRegUser /></div>
           <div>
             <h3>{totalProviders}</h3>
             <p>Total Providers</p>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon">🔎</div>
+          <div className="stat-icon"><FaRegUser /></div>
           <div>
             <h3>{filteredCount}</h3>
             <p>Filtered Results</p>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon">🧭</div>
+          <div className="stat-icon"><FaRegUser /></div>
           <div>
             <h3>{Math.max(0, totalProviders - filteredCount)}</h3>
             <p>Hidden by Search</p>
@@ -149,7 +150,6 @@ export default function ManageProviders() {
           <div className="provider-grid">
             {filteredProviders.length === 0 ? (
               <div className="admin-empty">
-                <div className="empty-icon">📭</div>
                 <h3>No providers found</h3>
                 <p>Try adjusting your search or add a new provider.</p>
               </div>

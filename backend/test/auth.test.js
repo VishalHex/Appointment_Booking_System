@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import { registerUser, authenticateUser } from '../src/auth.js';
+import { registerUser, authenticateUser } from '../src/services/authService.js';
 import { User } from '../src/models.js';
 
 describe('Auth Module', () => {
   before(async () => {
-    await User.sync({ force: true });
+    // Shared setup already syncs the database.
   });
 
   it('should register a new user', async () => {
