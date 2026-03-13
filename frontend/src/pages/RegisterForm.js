@@ -101,7 +101,7 @@ export default function RegisterForm({ onSuccess }) {
                 <FormField label="I am a" error={errors.role}>
                     <select name="role" value={form.role} onChange={handleChange} disabled={loading}>
                         <option value="client">Client (Booking Appointments)</option>
-                        <option value="provider">Service Provider</option>
+                        <option value="provider">Service Provider (requires admin approval)</option>
                     </select>
                 </FormField>
 

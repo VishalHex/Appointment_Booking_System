@@ -8,7 +8,13 @@ export default function Login() {
   const handleLoginSuccess = (token, user) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
-    navigate(user.role === 'provider' ? '/provider-dashboard' : '/dashboard');
+    if (user.role === 'admin') {
+      navigate('/admin/providers');
+    } else if (user.role === 'provider') {
+      navigate('/provider-dashboard');
+    } else {
+      navigate('/');
+    }
   };
 
   return (

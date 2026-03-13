@@ -67,7 +67,7 @@ export async function listAppointments(req, res) {
     if (req.user.role === 'client') {
       where.client_id = req.user.id;
     } else if (req.user.role === 'provider') {
-      where['$provider.user.id$'] = req.user.id; // Refactor to filter by provider.user_id
+      where['$provider.user.id$'] = req.user.id;
     }
 
     const appointments = await Appointment.findAll({

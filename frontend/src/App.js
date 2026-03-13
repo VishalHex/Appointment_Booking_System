@@ -6,6 +6,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AppointmentBooking from './pages/AppointmentBooking';
 import ProviderDashboard from './pages/ProviderDashboard';
+import ManageProviders from './pages/ManageProviders';
+import RegisterProvider from './pages/RegisterProvider';
 import axios from 'axios';
 
 function App() {
@@ -58,6 +60,22 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/providers"
+          element={
+            <ProtectedAdminRoute>
+              <ManageProviders />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin/providers/new"
+          element={
+            <ProtectedAdminRoute>
+              <RegisterProvider />
+            </ProtectedAdminRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
@@ -82,6 +100,20 @@ function ProtectedRoute({ children }) {
 
   if (!token) {
     return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+function ProtectedAdminRoute({ children }) {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  if (user?.role !== 'admin') {
+    return <Navigate to="/" replace />;
   }
 
   return children;

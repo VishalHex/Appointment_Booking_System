@@ -63,6 +63,13 @@ export default function Navbar() {
               </Link>
             </li>
           )}
+          {token && user?.role === 'admin' && (
+            <li>
+              <Link to="/admin/providers" className={`nav-link ${isActive('/admin/providers')}`} onClick={() => setIsMenuOpen(false)}>
+                Manage Providers
+              </Link>
+            </li>
+          )}
           {!token && (
             <>
               <li>

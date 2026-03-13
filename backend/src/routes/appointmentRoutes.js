@@ -12,7 +12,7 @@ const router = express.Router();
 
 
 router.post('/', requireAuth(['client']), bookAppointment);
-router.post('/:id/cancel', requireAuth(['client']), cancelAppointment);
+router.post('/:id/cancel', requireAuth(['client', 'admin']), cancelAppointment);
 router.get('/', requireAuth(['client', 'provider', 'admin']), listAppointments);
 router.get('/provider/:providerId/slots', listAvailableSlots);
 router.patch('/:id/status', requireAuth(['provider']), updateAppointmentStatus);
