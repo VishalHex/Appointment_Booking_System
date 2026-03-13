@@ -168,7 +168,7 @@ export default function ProviderDashboard() {
                                             <div className="appointment-time">{new Date(appointment.appointment_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                                         </div>
                                         <div className="appointment-details">
-                                            <h3>{appointment.provider.service_name}</h3>
+                                            <h3>{appointment.provider?.service_name || 'N/A'}</h3>
                                             <p>Status: <span className={`status ${appointment.status}`}>{appointment.status.toUpperCase()}</span></p>
                                         </div>
                                     </div>

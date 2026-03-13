@@ -388,7 +388,7 @@ export default function AppointmentBooking() {
                               timeZone: TIMEZONE
                             });
                             const isSelected = selectedSlot === slot;
-                            const isBooked = providerAppointments.some(
+                            const isBooked = Array.isArray(providerAppointments) && providerAppointments.some(
                               appointment => appointment.appointment_time.startsWith(slot) && appointment.status === 'booked'
                             );
                             return (

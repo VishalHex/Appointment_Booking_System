@@ -35,29 +35,29 @@ CREATE INDEX idx_provider_id ON appointments(provider_id);
 
 -- Sample data
 -- password_hash = password123
-INSERT INTO users (name, email, password_hash, role) VALUES
-('John Doe', 'john@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Jane Smith', 'jane@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Bob Johnson', 'bob@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Alice Brown', 'alice@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'client'),
-('Provider 4', 'provider4@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 5', 'provider5@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 6', 'provider6@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 7', 'provider7@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 8', 'provider8@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 9', 'provider9@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 10', 'provider10@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 11', 'provider11@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 12', 'provider12@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 13', 'provider13@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 14', 'provider14@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 15', 'provider15@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 16', 'provider16@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 17', 'provider17@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 18', 'provider18@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 19', 'provider19@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 20', 'provider20@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider'),
-('Provider 21', 'provider21@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider');
+INSERT INTO users (name, email, password_hash, role, created_at, updated_at) VALUES
+('John Doe', 'john@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Jane Smith', 'jane@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Bob Johnson', 'bob@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Alice Brown', 'alice@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'client', NOW(), NOW()),
+('Provider 4', 'provider4@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 5', 'provider5@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 6', 'provider6@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 7', 'provider7@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 8', 'provider8@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 9', 'provider9@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 10', 'provider10@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 11', 'provider11@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 12', 'provider12@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 13', 'provider13@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 14', 'provider14@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 15', 'provider15@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 16', 'provider16@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 17', 'provider17@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 18', 'provider18@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 19', 'provider19@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 20', 'provider20@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
+('Provider 21', 'provider21@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW());
 
 INSERT INTO providers (user_id, service_name, description) VALUES
 (1, 'Hair Cutting', 'Professional hair cutting and styling services'),

@@ -2,10 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import winston from 'winston';
 import dotenv from 'dotenv';
-import router from './routes.js';
 import { errorHandler, validateRegistration } from './middleware.js';
 import { Server } from 'socket.io';
 import http from 'http';
+import sequelize from './models.js';
 
 dotenv.config();
 process.env.TZ = 'Asia/Kolkata';
@@ -35,11 +35,13 @@ app.get('/', (req, res) => {
   res.send('Appointment Booking System Backend');
 });
 
-app.use('/api', router);
 app.use(errorHandler);
 
-import sequelize from './models.js';
 async function startServer() {
+  // Lazy import the router to avoid circular dependency
+  const router = (await import('./routes.js')).default;
+  app.use('/api', router);
+
   if (sequelize) {
     try {
       await sequelize.authenticate();

@@ -48,10 +48,10 @@ export async function providerCalendar(req, res) {
       const sec = String(d.getSeconds()).padStart(2, '0');
       return {
         ...apt.toJSON(),
-        appointment_time: `${yr}-${mo}-${da}T${hr}:${mi}:${sec}`
+        formattedTime: `${yr}-${mo}-${da} ${hr}:${mi}:${sec}`
       };
     });
-    res.json(formattedAppointments);
+    res.json({ calendar: formattedAppointments });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

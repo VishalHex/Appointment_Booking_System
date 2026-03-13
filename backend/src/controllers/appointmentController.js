@@ -64,20 +64,27 @@ export async function listAppointments(req, res) {
   try {
     let where = {};
 
-    if (req.user.role === 'client') where.client_id = req.user.id;
-    if (req.user.role === 'provider') where.provider_id = req.user.id;
-
     if (req.user.role === 'client') {
       where.client_id = req.user.id;
     } else if (req.user.role === 'provider') {
-      where.provider_id = req.user.id;
+      where['$provider.user.id$'] = req.user.id; // Refactor to filter by provider.user_id
     }
 
     const appointments = await Appointment.findAll({
       where,
       include: [
-        { model: Provider, attributes: ['id', 'service_name', 'description'], include: [{ model: User, as: 'user', attributes: ['name'] }], required: false },
-        { model: User, as: 'client', attributes: ['id', 'name', 'email'], required: false }
+        {
+          model: Provider,
+          attributes: ['id', 'service_name', 'description'],
+          include: [{ model: User, as: 'user', attributes: ['name'] }],
+          required: false
+        },
+        {
+          model: User,
+          as: 'client',
+          attributes: ['id', 'name', 'email'],
+          required: false
+        }
       ],
       order: [['appointment_time', 'ASC']],
     });
