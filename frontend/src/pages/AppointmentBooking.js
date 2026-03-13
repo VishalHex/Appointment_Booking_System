@@ -136,6 +136,9 @@ function CalendarPicker({ selectedDate, onSelectDate, allSlots }) {
 export default function AppointmentBooking() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+  user?.role !== 'client' && navigate('/');
 
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);

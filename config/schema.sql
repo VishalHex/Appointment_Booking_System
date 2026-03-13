@@ -36,6 +36,7 @@ CREATE INDEX idx_provider_id ON appointments(provider_id);
 -- Sample data
 -- password_hash = password123
 INSERT INTO users (name, email, password_hash, role, created_at, updated_at) VALUES
+('Admin User', 'admin@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'admin', NOW(), NOW()),
 ('John Doe', 'john@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
 ('Jane Smith', 'jane@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),
 ('Bob Johnson', 'bob@example.com', '$2b$10$8rT.OiWWrCDGhZZ85oOFM.qesNo28LhfnMPUNNsQOCNYOtP1nwhYa', 'provider', NOW(), NOW()),

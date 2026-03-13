@@ -114,11 +114,13 @@ export default function Home() {
               <h1>My Appointments</h1>
               <p className="subtitle">Manage and track your bookings</p>
             </div>
-            <div>
-              <button onClick={() => navigate('/book')} className="btn btn-primary">
-                <FaPlus className='mr-2' /> Book New Appointment
-              </button>
-            </div>
+            {user?.role === 'client' && (
+              <div>
+                <button onClick={() => navigate('/book')} className="btn btn-primary">
+                  <FaPlus className='mr-2' /> Book New Appointment
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="dashboard-stats">
@@ -169,11 +171,13 @@ export default function Home() {
                 <div className="empty-icon">📭</div>
                 <h3>No appointments found</h3>
                 <p>Try adjusting your filters to find appointments.</p>
-                <div className="d-inline-block">
-                  <button onClick={() => navigate('/book')} className="btn btn-primary">
-                    Book First Appointment
-                  </button>
-                </div>
+                {user?.role === 'client' && (
+                  <div className="d-inline-block">
+                    <button onClick={() => navigate('/book')} className="btn btn-primary">
+                      Book First Appointment
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               appointments.map(apt => {
